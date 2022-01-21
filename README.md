@@ -1,2 +1,1 @@
-# modulo-2-backend-devinhouse
-Repositório para armazenar códigos feitos para disponibilizar para os alunos
+# Projeto 3 DevInHouse BRy e Teltec - DevInBank
