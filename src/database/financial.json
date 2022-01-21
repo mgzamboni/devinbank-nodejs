@@ -1,0 +1,16 @@
+[
+    {
+        "id": 1, 
+        "userId": 1,
+        "financialData": 
+        [
+            {
+                "id": 1,
+                "price": 100,
+                "typeOfExpense": "food",
+                "data": "20/01/2020",
+                "name": "pão"
+            }
+        ]
+    }
+]
