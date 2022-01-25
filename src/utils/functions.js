@@ -1,15 +1,38 @@
 const fileSystem = require('fs')
 
-function getData(fileName){
-    const result = JSON.parse(fileSystem.readFileSync('src/database/'+fileName, utf8))
+function validateDB(filename){
+    return fileSystem.existsSync('src/database/'+filename) 
+}
+
+function getData(filename){
+    const result = JSON.parse(fileSystem.readFileSync('src/database/'+filename, 'utf8'))
     return result
 }
 
-function createOrUpdateData(fileName, data){
-    fileSystem.writeFileSync('src/database/'+fileName, JSON.stringify(data))
+function insertData(filename, data){
+    let result = JSON.parse(fileSystem.readFileSync('src/database/'+filename, 'utf8'));
+    if (Array.isArray(result)){
+        result.push(data)
+        fileSystem.writeFileSync('src/database/'+filename, JSON.stringify(result))
+        return result.length
+    } else {
+        return null
+    }
+}
+
+function getDataArray(filename) {
+    let result = JSON.parse(fileSystem.readFileSync('src/database/'+filename, "utf8"));
+    return Array.isArray(result) ? result : result = null;
+  }
+
+function createOrUpdateData(filename, data){
+    fileSystem.writeFileSync('src/database/'+filename, JSON.stringify(data))
 }
 
 module.exports = {
+    validateDB,
     getData,
-    createOrUpdateData
+    insertData,
+    createOrUpdateData,
+    getDataArray
 }
