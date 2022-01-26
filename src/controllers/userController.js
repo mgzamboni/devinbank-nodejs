@@ -8,7 +8,7 @@ module.exports = {
         return res.status(200).json({users: users})
     },
 
-    async newUser(req, res){
+    async addNewUser(req, res){
         if (validateDB('users.json') === false) return res.status(500).json({message: 'users.json database not found'})
         const userData = req.body
         insertStatus = insertData('users.json', userData, 'id', 'email')
