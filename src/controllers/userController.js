@@ -11,10 +11,16 @@ module.exports = {
     async newUser(req, res){
         if (validateDB('users.json') === false) return res.status(500).json({message: 'users.json database not found'})
         const userData = req.body
-        if(insertData('users.json', userData) === null) {
-            return res.status(500).json({message: 'invalid'})
+        insertStatus = insertData('users.json', userData, 'id', 'email')
+        console.log(insertStatus)
+        if(!insertStatus) {
+            return res.status(500).json({message: 'user.json database corrupted'})
         }
-        console.log(getDataArray('users.json'))
-        return res.status(200).json(getData('users.json')) 
+        else if(Array.isArray(insertStatus)) {
+            return res.status(400).json({message: insertStatus.map(dataKey => `The ${dataKey} '${userData[dataKey]}' is being used`)})
+        }
+        else    {
+            return res.status(200).json(getData('users.json'))
+        }
     },
 }
