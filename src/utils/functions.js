@@ -8,7 +8,6 @@ function checkInvalidKeys(reqBody) {
     const invalidKeys = Object.keys(reqBody).filter(key => { 
         if(key === 'id' && typeof reqBody[key] !== 'number' )
             return true
-        // else if((key === 'name' || key === 'email') && typeof reqBody[key] !== 'string') 
         else if((key === 'name' || key === 'email')) {
             if (typeof reqBody[key] !== 'string' || !isNaN(reqBody[key])) return true
             if(!reqBody[key].length) return true
@@ -37,25 +36,43 @@ function validateUserInput(reqBody) {
 }
 
 function getData(filename){
-    const result = JSON.parse(fileSystem.readFileSync('src/database/'+filename, 'utf8'))
-    return result
+    const dataArray = JSON.parse(fileSystem.readFileSync('src/database/'+filename, 'utf8'))
+    return dataArray
 }
 
 function insertData(filename, newObj, ...keys){
-    const result = getDataArray(filename)
-    if (result){
-        DuplicateObj = checkDuplicateObj(result, newObj, keys)
+    const dataArray = getDataArray(filename)
+    if (dataArray){
+        DuplicateObj = checkDuplicateObj(dataArray, newObj, keys)
         if(!DuplicateObj) {
-            result.push(newObj)
-            fileSystem.writeFileSync('src/database/'+filename, JSON.stringify(result))
-            return result.length
+            dataArray.push(newObj)
+            fileSystem.writeFileSync('src/database/'+filename, JSON.stringify(dataArray))
+            return dataArray.length
         } else {
             return getDuplicateKey(DuplicateObj, newObj, keys)
         }
     } else return null
 }
 
+function updateData(filename, objId, newData){
+    const dataArray = getDataArray(filename)
+    if (dataArray) {
+        userObj = getUserId(filename, objId)
+        filteredDataArray = dataArray.filter(user => { return user['id'] !== parseInt(objId) })
+        DuplicateObj = checkDuplicateObj(filteredDataArray, newData, ['email'])
+        if(!DuplicateObj) {
+            const updatedDataArray = dataArray.map(user => { return (user['id'] === parseInt(objId)) ? {...user, ...newData} : {...user}  })
+            fileSystem.writeFileSync('src/database/' + filename, JSON.stringify(updatedDataArray))
+            return dataArray.length
+        } else {
+            return getDuplicateKey(DuplicateObj, newData, ['email'])
+        }
+    } else return null
+}
+
+
 function checkDuplicateObj(objArray, newObj, keys) {
+    // if(!Array.isArray(keys))
     return objArray.find(obj => keys.find(key => { if (obj[key] === newObj[key]) return key}) )
 }
 
@@ -66,8 +83,8 @@ function getDuplicateKey(obj, newObj, keys) {
 }
 
 function getDataArray(filename) {
-    const result = JSON.parse(fileSystem.readFileSync('src/database/' + filename, "utf8"))
-    return Array.isArray(result) ? result : null
+    const dataArray = JSON.parse(fileSystem.readFileSync('src/database/' + filename, "utf8"))
+    return Array.isArray(dataArray) ? dataArray : null
 }
 
 function createOrUpdateData(filename, data){
@@ -90,5 +107,6 @@ module.exports = {
     insertData,
     createOrUpdateData,
     getDataArray,
-    getUserId
+    getUserId,
+    updateData
 }

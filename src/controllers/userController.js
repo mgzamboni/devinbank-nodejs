@@ -34,10 +34,11 @@ module.exports = {
 
     async updateUser(req, res) {
         const { id } = req.params
+        if(isNaN(id))
+            return res.status(400).json({message: 'Invalid id format'})
+
         const updateUserData = req.body
         matchUser = getUserId('users.json', id)
-        console.log(matchUser);
-        console.log(Object.keys(matchUser).length)
         if(Object.keys(matchUser).length) {
             delete matchUser.id
             const invalidKeys = Object.keys(updateUserData).filter(key => !Object.keys(matchUser).includes(key))
@@ -59,6 +60,18 @@ module.exports = {
             else 
              return res.status(201).json(getData('users.json'))
         }
-        return res.status(200).json({message: 'User not found, invalid id'})
+        return res.status(400).json({message: 'User not found, invalid id'})
     },
+
+    async userInfo(req, res) {
+        const { id } = req.params
+        if(isNaN(id))
+            return res.status(400).json({message: 'Invalid id format'})
+
+        matchUser =  getUserId('users.json', id)
+        if(Object.keys(matchUser).length) {
+            return res.status(200).json(matchUser)
+        }
+        return res.status(200).json({message: 'User not found, invalid id'})
+    }
 }
