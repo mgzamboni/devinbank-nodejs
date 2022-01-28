@@ -4,21 +4,35 @@ function validateDB(filename){
     return fileSystem.existsSync('src/database/'+filename) 
 }
 
-function validateInput(reqBody) {
-    const invalidKeyValues = Object.keys(reqBody).filter(key => { 
+function checkInvalidKeys(reqBody) {
+    const invalidKeys = Object.keys(reqBody).filter(key => { 
         if(key === 'id' && typeof reqBody[key] !== 'number' )
             return true
-        else if((key === 'name' || key === 'email') && typeof reqBody[key] !== 'string') 
-            return true
+        // else if((key === 'name' || key === 'email') && typeof reqBody[key] !== 'string') 
+        else if((key === 'name' || key === 'email')) {
+            if (typeof reqBody[key] !== 'string' || !isNaN(reqBody[key])) return true
+            if(!reqBody[key].length) return true
+        }
         else
             return false
         }
     )
-    return invalidKeyValues.map(key => {
+    return invalidKeys;
+}
+
+function validateUserInput(reqBody) {
+    invalidKeys = checkInvalidKeys(reqBody);
+    return invalidKeys.map(key => {
         if(key === 'id')
-            return `The ${key} prop is a '${typeof reqBody[key]}' but it should be a 'number'`
-        else
-            return `The ${key} prop is a '${typeof reqBody[key]}' but it should be a 'string'`
+            return `The '${key}' prop is a '${typeof reqBody[key]}' but it should be a 'number'`
+        else {
+            if(typeof reqBody[key] !== 'string') 
+                return `The '${key}' is a '${typeof reqBody[key]}' but it should be a 'string'`
+            if(!reqBody[key].length) 
+                return `The '${key}' cannot be empty`
+            if(!isNaN(reqBody[key]))
+                return `The '${key}' cannot be a number`
+        }
     })
 }
 
@@ -47,7 +61,6 @@ function checkDuplicateObj(objArray, newObj, keys) {
 
 function getDuplicateKey(obj, newObj, keys) {
     if(obj !== undefined) {
-        console.log(keys.map(key => obj[key] === newObj[key]))
         return keys.filter(key => obj[key] === newObj[key])
     }
 }
@@ -61,11 +74,21 @@ function createOrUpdateData(filename, data){
     fileSystem.writeFileSync('src/database/'+filename, JSON.stringify(data))
 }
 
+function getUserId(filename, id) {
+    usersData = getDataArray(filename)
+    if(usersData) {
+        return usersData.find(user => { return user['id'] === parseInt(id) }) || {}
+    }
+    return {}
+}
+
+
 module.exports = {
     validateDB,
-    validateInput,
+    validateUserInput,
     getData,
     insertData,
     createOrUpdateData,
-    getDataArray
+    getDataArray,
+    getUserId
 }
