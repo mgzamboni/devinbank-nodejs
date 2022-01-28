@@ -35,21 +35,30 @@ module.exports = {
     async updateUser(req, res) {
         const { id } = req.params
         const updateUserData = req.body
-        //get user by id, if it exists
         matchUser = getUserId('users.json', id)
+        console.log(matchUser);
+        console.log(Object.keys(matchUser).length)
         if(Object.keys(matchUser).length) {
-            //check if all update keys are valid
             delete matchUser.id
             const invalidKeys = Object.keys(updateUserData).filter(key => !Object.keys(matchUser).includes(key))
+
             if(invalidKeys.length) {
                 return res.status(400).json({message: `The object cannot contain the following keys:${ invalidKeys.map(key => `' ${key}'`) }.` })
             }
-            //
-            updateData('users.json', id, updateUserData)
+            
+            const verifyNoChange = Object.keys(matchUser).filter(key => {return matchUser[key] !== updateUserData[key] })
+            if(!verifyNoChange.length)
+                return res.status(200).json({message: "There's no content to be updated"})
+
+            const updateStatus = updateData('users.json', id, updateUserData)
+
+            if(!updateStatus) 
+                return res.status(500).json({message: 'user.json database corrupted'})
+            else if(Array.isArray(updateStatus)) 
+                return res.status(200).json({message: updateStatus.map(dataKey => `The ${dataKey} '${updateUserData[dataKey]}' is being used`)})
+            else 
+             return res.status(201).json(getData('users.json'))
         }
-        return res.status(200).json({message: 'User not found'})
-        //check if all keys inside the body are valid, else returns error
-
-
+        return res.status(200).json({message: 'User not found, invalid id'})
     },
 }
