@@ -1,7 +1,1 @@
-[
-    {
-        "id": 1,
-        "name": "Matheus",
-        "email": "matheus@dev.com"
-    }
-]
+[{"id":1,"name":"Matheus","email":"matheus@dev.com"},{"id":2,"name":"Amanda","email":"amanda@dev.com"},{"id":3,"name":"Sandra","email":"sandra@dev.com"},{"id":4,"name":"Robson","email":"robsonhur@dev.com"}]
