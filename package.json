@@ -1,13 +1,14 @@
 {
-  "name": "modulo-2-backend-devinhouse",
+  "name": "devinbank-nodejs",
   "version": "1.0.0",
-  "main": "index.js",
-  "repository": "https://github.com/pedrohbsilva/modulo-2-backend-devinhouse.git",
-  "author": "pedro <phbs1235@gmail.com>",
+  "main": "server.js",
+  "repository": "https://github.com/mgzamboni/devinbank-nodejs",
+  "author": "matheus <matheus_zamboni@estudante.sesisenai.org.br>",
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.2",
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.15",
+    "yarn": "^1.22.17"
   },
   "scripts": {
     "start": "nodemon src/server.js"
