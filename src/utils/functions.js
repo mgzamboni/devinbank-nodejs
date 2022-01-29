@@ -1,4 +1,5 @@
 const fileSystem = require('fs')
+var xlsx = require('xlsx');
 
 function validateDB(filename){
     return fileSystem.existsSync('src/database/'+filename) 
@@ -38,6 +39,12 @@ function validateUserInput(reqBody) {
 function getData(filename){
     const dataArray = JSON.parse(fileSystem.readFileSync('src/database/'+filename, 'utf8'))
     return dataArray
+}
+
+function getDataXlsx(filename){
+    const workbook = xlsx.readFile('src/uploads/'+filename);
+    const sheet_name_list = workbook.SheetNames;
+    return xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]])
 }
 
 function insertData(filename, newObj, ...keys){
@@ -108,5 +115,6 @@ module.exports = {
     createOrUpdateData,
     getDataArray,
     getUserId,
-    updateData
+    updateData,
+    getDataXlsx
 }
