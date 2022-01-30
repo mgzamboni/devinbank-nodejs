@@ -44,7 +44,7 @@ function getData(filename){
 function getDataXlsx(filename){
     const workbook = xlsx.readFile('src/uploads/'+filename);
     const sheet_name_list = workbook.SheetNames;
-    return xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]])
+    return xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {raw: false})
 }
 
 function insertData(filename, newObj, ...keys){
@@ -106,6 +106,32 @@ function getUserId(filename, id) {
     return {}
 }
 
+function getAvailableId(filename, idKey) {
+    usersData = getDataArray(filename)
+    if(usersData) {
+        let newId = 0
+        do {
+            newId++
+        } while(usersData.find(user => { return user[idKey] === parseInt(newId) }) !== undefined)
+        return newId;
+    }
+    return 0
+}
+
+function validateFileHeader(financesDataArray) {
+    const validKeys = ['price', 'typeOfExpenses', 'date', 'name']
+
+    const checkKeys = validKeys.filter(key => {return !financesDataArray[0].hasOwnProperty(key)})
+    if(checkKeys.length > 0)
+        //return checkKeys
+    if(Object.getOwnPropertyNames(financesDataArray[0]).length > 4)
+        return Object.keys(financesDataArray[0]).filter(key => !validKeys.includes(key))
+    return null
+}
+
+function validateFileContent(financesDataArray) {
+
+}
 
 module.exports = {
     validateDB,
@@ -116,5 +142,7 @@ module.exports = {
     getDataArray,
     getUserId,
     updateData,
-    getDataXlsx
+    getDataXlsx,
+    getAvailableId,
+    validateFileHeader
 }
