@@ -1,5 +1,6 @@
 const fileSystem = require('fs')
-var xlsx = require('xlsx');
+const xlsx = require('xlsx');
+const _ = require('lodash/array');
 
 function validateDB(filename){
     return fileSystem.existsSync('src/database/'+filename) 
@@ -79,7 +80,6 @@ function updateData(filename, objId, newData){
 
 
 function checkDuplicateObj(objArray, newObj, keys) {
-    // if(!Array.isArray(keys))
     return objArray.find(obj => keys.find(key => { if (obj[key] === newObj[key]) return key}) )
 }
 
@@ -118,15 +118,11 @@ function getAvailableId(filename, idKey) {
     return 0
 }
 
-function validateFileHeader(financesDataArray) {
+function validateFinanceProps(financesDataArray) {
     const validKeys = ['price', 'typeOfExpenses', 'date', 'name']
-
-    const checkKeys = validKeys.filter(key => {return !financesDataArray[0].hasOwnProperty(key)})
-    if(checkKeys.length > 0)
-        //return checkKeys
-    if(Object.getOwnPropertyNames(financesDataArray[0]).length > 4)
-        return Object.keys(financesDataArray[0]).filter(key => !validKeys.includes(key))
-    return null
+    const filteredInvalidKeys = financesDataArray.map(obj => Object.keys(obj).filter(elem => !validKeys.includes(elem)))    
+    console.log(financesDataArray.length);
+    return _.union(...filteredInvalidKeys)
 }
 
 function validateFileContent(financesDataArray) {
@@ -144,5 +140,5 @@ module.exports = {
     updateData,
     getDataXlsx,
     getAvailableId,
-    validateFileHeader
+    validateFinanceProps
 }

@@ -1,4 +1,4 @@
-const { getData, createOrUpdateData, getDataXlsx, getUserId, getAvailableId, validateFileHeader } = require('../utils/functions')
+const { getData, createOrUpdateData, getDataXlsx, getUserId, getAvailableId, validateFinanceProps } = require('../utils/functions')
 const financialService = require('../services/financial.service')
 const fileSystem = require('fs')
 
@@ -24,11 +24,17 @@ module.exports = {
         
         matchUser =  getUserId('users.json', userId)
         if(Object.keys(matchUser).length) {
-            const obj = getDataXlsx(filename)
-            console.log(getAvailableId('financial.json', 'id'))
+            const financialDataArray = getDataXlsx(filename)
+            if(!financialDataArray.length) {
+                fileSystem.unlinkSync('src/uploads/'+filename)
+                return res.status(200).json({message: 'File is empty'})
+            }
             fileSystem.unlinkSync('src/uploads/'+filename)
-            console.log(validateFileHeader(obj))
-            return res.status(200).json({filedata: {filename, size}, user: {...matchUser}, financial: obj})
+            financeProps = validateFinanceProps(financialDataArray)
+            if(financeProps.length > 0) {
+                return res.status(400).json({message: `The following column headers are invalid: ${financeProps.map(prop => prop)}`})
+            }
+            return res.status(200).json({filedata: {filename, size}, user: {...matchUser}, financial: financialDataArray})
         
         }
         fileSystem.unlinkSync('src/uploads/'+filename)
