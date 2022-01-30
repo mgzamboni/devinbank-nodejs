@@ -45,7 +45,7 @@ function getData(filename){
 function getDataXlsx(filename){
     const workbook = xlsx.readFile('src/uploads/'+filename);
     const sheet_name_list = workbook.SheetNames;
-    return xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]], {raw: false})
+    return xlsx.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]])
 }
 
 function insertData(filename, newObj, ...keys){
@@ -118,15 +118,43 @@ function getAvailableId(filename, idKey) {
     return 0
 }
 
-function validateFinanceProps(financesDataArray) {
+function checkMissingFinanceProps(financeDataArray) {
+    const validKeys = ['price', 'typeOfExpenses', 'date', 'name']
+    const missingValidKeys = financeDataArray.map(obj => validKeys.filter(key => {return !(key in obj)}))
+    return _.union(...missingValidKeys)
+}
+
+function checkInvalidFinanceProps(financesDataArray) {
     const validKeys = ['price', 'typeOfExpenses', 'date', 'name']
     const filteredInvalidKeys = financesDataArray.map(obj => Object.keys(obj).filter(elem => !validKeys.includes(elem)))    
-    console.log(financesDataArray.length);
     return _.union(...filteredInvalidKeys)
 }
 
-function validateFileContent(financesDataArray) {
+function ExcelDateToJSDate(date) {
+    return new Date(Math.round((date - 25569)*86400*1000));
+  }
 
+function checkFileData(financesDataArray) {
+    const invalidData = financesDataArray.filter(obj => {
+        // Check if 'price' is a number
+        if(isNaN(obj['price']) || isNaN(obj['date']))
+            return true
+
+        // Check if 'typeOfExpenses' and 'name' are a string
+        if(!isNaN(obj['typeOfExpenses']) || !isNaN(obj['name']))
+            return true
+        
+        // Check if 'typeOfExpenses' and 'name' have invalid chars
+        let regex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g;
+        if(regex.test(obj['typeOfExpenses']) || regex.test(obj['name']))
+            return true
+        
+        const date = ExcelDateToJSDate(obj['date'])
+        if(!(date instanceof Date && !isNaN(date.valueOf())))
+             return true
+        return false
+    })
+    return invalidData;
 }
 
 module.exports = {
@@ -140,5 +168,7 @@ module.exports = {
     updateData,
     getDataXlsx,
     getAvailableId,
-    validateFinanceProps
+    checkMissingFinanceProps,
+    checkInvalidFinanceProps,
+    checkFileData
 }
