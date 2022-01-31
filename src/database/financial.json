@@ -1,1 +1,42 @@
-[{"id":1,"userId":2,"financialData":[{"id":5,"price":5.49,"typeOfExpenses":"game","date":"28/01/2022","name":"bread simulator"}]},{"id":2,"userId":3,"financialData":[{"id":4,"price":4,"typeOfExpenses":"food","date":"27/01/2022","name":"bread"},{"id":5,"price":5.49,"typeOfExpenses":"game","date":"28/01/2022","name":"bread simulator"}]}]
+[
+  {
+    "id": 1,
+    "userId": 2,
+    "financialData": [
+      {
+        "id": 5,
+        "price": 5.49,
+        "typeOfExpenses": "game",
+        "date": "28/01/2022",
+        "name": "bread simulator"
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "userId": 3,
+    "financialData": [
+      {
+        "id": 4,
+        "price": 4,
+        "typeOfExpenses": "food",
+        "date": "27/01/2022",
+        "name": "bread"
+      },
+      {
+        "id": 5,
+        "price": 5.49,
+        "typeOfExpenses": "game",
+        "date": "28/01/2022",
+        "name": "bread simulator"
+      },
+      {
+        "id": 5,
+        "price": 17.49,
+        "typeOfExpenses": "coffee",
+        "date": "28/01/2022",
+        "name": "bread simulator"
+      }
+    ]
+  }
+]

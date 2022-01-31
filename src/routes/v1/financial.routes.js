@@ -11,6 +11,6 @@ const upload = multer({storage})
 financialRoutes.get('/v1/finance', financialController.index)
 financialRoutes.post('/v1/finance/:userId', upload.single('file'),financialController.addNewFinance)
 financialRoutes.delete('/v1/finance/:userId/:financialId', financialController.deleteFinance)
-
+financialRoutes.get('/v1/finance/:userId', financialController.getExpenses)
 
 module.exports = financialRoutes

@@ -1,4 +1,5 @@
-const { getData, createOrUpdateData, getDataXlsx, getUserId, getAvailableId, checkMissingFinanceProps, checkInvalidFinanceProps, checkFileData, insertFinancialData, removeFinancialData } = require('../utils/functions')
+const { getData, createOrUpdateData, getDataXlsx, getUserId, getAvailableId, checkMissingFinanceProps, checkInvalidFinanceProps, 
+    checkFileData, insertFinancialData, removeFinancialData, getFinancialUserId } = require('../utils/functions')
 const financialService = require('../services/financial.service')
 const fileSystem = require('fs')
 
@@ -64,7 +65,7 @@ module.exports = {
     async deleteFinance(req, res) {
         const {userId, financialId} = req.params
         if(isNaN(userId) || isNaN(financialId))
-            return res.status(400).json({message: `'userId' and 'financialId' can only be numbers `})
+            return res.status(400).json({message: `The 'userId' and 'financialId' can only be numbers `})
 
         const matchUser =  getUserId('users.json', userId)
         // Check if existis an user with the given userId
@@ -77,5 +78,33 @@ module.exports = {
         else
             return res.status(200).json({message: `The financialId wasn't found`})
 
+    },
+
+    async getExpenses(req, res) {
+        const { userId } = req.params
+        const query = req.query
+        console.log(query)
+        if(isNaN(userId) )
+            return res.status(400).json({message: `The 'userId' can only be numbers `})
+
+        const matchUser = getUserId('users.json', userId)
+        if(!Object.keys(matchUser).length) 
+            return res.status(200).json({message: `'userId' not found`})
+
+        if(!Object.keys(getFinancialUserId('financial.json', userId)).length)
+            return res.status(200).json({message: `'userId' not registered in financial database`})
+
+        const userFinancesInfo = getFinancialUserId('financial.json', userId)
+        if(Object.keys(query).length) {
+            const allvalues = query.typeOfExpenses.map(data => userFinancesInfo.financialData.map(finance => {
+                return finance['typeOfExpenses'] === data ? finance['price'] : 0
+            }))
+            const totalValue = allvalues.flat().reduce((a,b) => a+b).toFixed(2)
+            return res.status(200).json({message: `The total value registered given the expenses${query.typeOfExpenses.map(elem => ` '${elem}'`)} is: ${totalValue}`})
+        } else {
+            const allvalues = userFinancesInfo.financialData.map(finance => { return finance['price'] })
+            const totalValue = allvalues.flat().reduce((a,b) => a+b).toFixed(2)
+            return res.status(200).json({message: `The total value registered is: ${totalValue}`})
+        }
     }
 }

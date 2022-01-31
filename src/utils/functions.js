@@ -229,5 +229,6 @@ module.exports = {
     checkInvalidFinanceProps,
     checkFileData,
     insertFinancialData,
-    removeFinancialData
+    removeFinancialData,
+    getFinancialUserId
 }
