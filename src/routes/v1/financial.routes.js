@@ -9,7 +9,8 @@ const storage = manageStorage()
 const upload = multer({storage})
 
 financialRoutes.get('/v1/finance', financialController.index)
-financialRoutes.get('/v1/finance/:userId', upload.single('file'),financialController.addNewFinance)
+financialRoutes.post('/v1/finance/:userId', upload.single('file'),financialController.addNewFinance)
+financialRoutes.delete('/v1/finance/:userId/:financialId', financialController.deleteFinance)
 
 
 module.exports = financialRoutes

@@ -106,6 +106,14 @@ function getUserId(filename, id) {
     return {}
 }
 
+function getFinancialUserId(filename, id) {
+    usersData = getDataArray(filename)
+    if(usersData) {
+        return usersData.find(user => { return user['userId'] === parseInt(id) }) || {}
+    }
+    return {}
+}
+
 function getAvailableId(filename, idKey) {
     usersData = getDataArray(filename)
     if(usersData) {
@@ -113,6 +121,18 @@ function getAvailableId(filename, idKey) {
         do {
             newId++
         } while(usersData.find(user => { return user[idKey] === parseInt(newId) }) !== undefined)
+        return newId;
+    }
+    return 0
+}
+
+function getFinancialAvailableId(financialDataArray, userId, idKey) {
+    financeData = financialDataArray.find(user => { return user['userId'] === userId })
+    if(financeData) {
+        let newId = 0
+        do {
+            newId++
+        } while(financeData.financialData.find(data => { return data[idKey] === parseInt(newId) }) !== undefined)
         return newId;
     }
     return 0
@@ -157,6 +177,43 @@ function checkFileData(financesDataArray) {
     return invalidData;
 }
 
+function insertFinancialData(filename, userId, newData) {
+    let financialData = getDataArray(filename)
+
+    // If user doesn't exists, insert a new entry in financial.json
+    if(!Object.keys(getFinancialUserId(filename, userId)).length) {
+        financialData.push({id: getAvailableId(filename, 'id'), userId: parseInt(userId), financialData: []})
+    }
+    // if user finances already exists, insert new data
+    newData.map(data => {
+        const availableId = getFinancialAvailableId(financialData, parseInt(userId), 'id')
+        financialData.map(obj => {
+            if(obj['userId'] === parseInt(userId)) {
+                const newFinancialData = {id: availableId, ...data ,date: ExcelDateToJSDate(data.date).toLocaleDateString()}
+                obj.financialData.push(newFinancialData)
+            } 
+        })
+    })
+    fileSystem.writeFileSync('src/database/' + filename, JSON.stringify(financialData))
+    return financialData
+}
+
+function removeFinancialData(filename, userId, financialId) {
+    var financialData = getDataArray(filename)
+    const verify = financialData.map(obj => {
+        if(obj['userId'] === parseInt(userId)) {
+            const test = obj.financialData.findIndex(data => data.id === parseInt(financialId));
+            if(test !== -1) {
+                obj.financialData.splice(test, 1)
+                return true
+            }
+        } return false
+    })
+    if(verify.includes(true))
+        fileSystem.writeFileSync('src/database/' + filename, JSON.stringify(financialData))
+    return verify.includes(true)
+}
+
 module.exports = {
     validateDB,
     validateUserInput,
@@ -170,5 +227,7 @@ module.exports = {
     getAvailableId,
     checkMissingFinanceProps,
     checkInvalidFinanceProps,
-    checkFileData
+    checkFileData,
+    insertFinancialData,
+    removeFinancialData
 }

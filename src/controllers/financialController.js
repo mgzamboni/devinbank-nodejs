@@ -1,4 +1,4 @@
-const { getData, createOrUpdateData, getDataXlsx, getUserId, getAvailableId, checkMissingFinanceProps, checkInvalidFinanceProps, checkFileData } = require('../utils/functions')
+const { getData, createOrUpdateData, getDataXlsx, getUserId, getAvailableId, checkMissingFinanceProps, checkInvalidFinanceProps, checkFileData, insertFinancialData, removeFinancialData } = require('../utils/functions')
 const financialService = require('../services/financial.service')
 const fileSystem = require('fs')
 
@@ -24,7 +24,7 @@ module.exports = {
             return res.status(400).json({message: 'Invalid file format, only .xlsx files are accepted'})
         }
         
-        matchUser =  getUserId('users.json', userId)
+        const matchUser =  getUserId('users.json', userId)
         // Check if existis an user with the given userId
         if(Object.keys(matchUser).length) {
 
@@ -48,12 +48,34 @@ module.exports = {
                 return res.status(400).json({message: `The following columns are invalid:${financeProps.map(prop => ` ${prop}`)}.`})
             }
 
-            checkFileData(financialDataArray)
+            // Check if the file has invalid data
+            const invalidFileData = checkFileData(financialDataArray)
+            if(invalidFileData.length > 0)
+                return res.status(400).json({message: `Some of the data inside the file isn't in a valid format`}) 
 
-            return res.status(200).json({filedata: {filename, size}, user: {...matchUser}, financial: financialDataArray})
+            insertFinancialData('financial.json', userId, financialDataArray)
+            return res.status(201).json(getData('financial.json'))
         
         }
         fileSystem.unlinkSync('src/uploads/'+filename)
         return res.status(200).json({message: 'User not found, invalid id'})
+    },
+
+    async deleteFinance(req, res) {
+        const {userId, financialId} = req.params
+        if(isNaN(userId) || isNaN(financialId))
+            return res.status(400).json({message: `'userId' and 'financialId' can only be numbers `})
+
+        const matchUser =  getUserId('users.json', userId)
+        // Check if existis an user with the given userId
+        if(!Object.keys(matchUser).length) 
+            return res.status(200).json({message: `'userId' not found`})
+
+        const updatedFinancial = removeFinancialData('financial.json', userId, financialId)
+        if(updatedFinancial)
+            return res.status(200).json(getData('financial.json'))
+        else
+            return res.status(200).json({message: `The financialId wasn't found`})
+
     }
 }

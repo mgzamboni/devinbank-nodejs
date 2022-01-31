@@ -1,16 +1,1 @@
-[
-    {
-        "id": 1, 
-        "userId": 2,
-        "financialData": 
-        [
-            {
-                "id": 1,
-                "price": 100,
-                "typeOfExpense": "food",
-                "data": "20/01/2020",
-                "name": "pão"
-            }
-        ]
-    }
-]
+[{"id":1,"userId":2,"financialData":[{"id":5,"price":5.49,"typeOfExpenses":"game","date":"28/01/2022","name":"bread simulator"}]},{"id":2,"userId":3,"financialData":[{"id":4,"price":4,"typeOfExpenses":"food","date":"27/01/2022","name":"bread"},{"id":5,"price":5.49,"typeOfExpenses":"game","date":"28/01/2022","name":"bread simulator"}]}]
