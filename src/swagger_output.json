@@ -1,0 +1,302 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "DevInBank API",
+    "description": "Manage users and their financial datas with this API",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Users",
+      "description": "Endpoints"
+    },
+    {
+      "name": "Financial",
+      "description": "Endpoints"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json",
+    "multipart/form-data"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/finance": {
+      "get": {
+        "tags": [
+          "Financial"
+        ],
+        "description": "Endpoint para obter a lista de relatórios financeiros",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/finance/{userId}": {
+      "post": {
+        "tags": [
+          "Financial"
+        ],
+        "description": "Endpoint para ler dados de um arquivo xlsx e armazenar na base de dados",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "number",
+            "description": "ID do usuário."
+          },
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": true,
+            "description": "Some description...",
+            "accept": "/"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Financial"
+        ],
+        "description": "Endpoint que retorna a soma total dos valores de transações de um usuário ou a soma dos valores filtrados pela query ",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "number",
+            "description": "ID do usuário."
+          },
+          {
+            "name": "typeOfExpenses",
+            "in": "query",
+            "description": "Filtro que identifica os tipos de transações que serão calculados",
+            "type": "array",
+            "collectionFormat": "multi"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/v1/finance/{userId}/{financialId}": {
+      "delete": {
+        "tags": [
+          "Financial"
+        ],
+        "description": "Endpoint para remover uma transação de um usuário específico",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "type": "number",
+            "description": "ID do usuário."
+          },
+          {
+            "name": "financialId",
+            "in": "path",
+            "required": true,
+            "type": "number",
+            "description": "ID de uma transação"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Endpoint para obter a lista de usuários",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/user": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Endpoint para adicionar um novo usuário a lista de usuários",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "schema": {
+              "required": [
+                "id",
+                "name",
+                "email"
+              ],
+              "properties": {
+                "id": {
+                  "required": true,
+                  "type": "number",
+                  "example": 5
+                },
+                "name": {
+                  "required": true,
+                  "type": "string",
+                  "example": "fulano"
+                },
+                "email": {
+                  "required": true,
+                  "type": "string",
+                  "example": "fulano@dev.com"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/api/v1/user/{id}": {
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Endpoint para atualizar um usuário",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "number",
+            "description": "ID do usuário a ser atualizado"
+          },
+          {
+            "name": "obj",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "required": [
+                "name",
+                "email"
+              ],
+              "properties": {
+                "name": {
+                  "required": true,
+                  "type": "string",
+                  "example": "fulano"
+                },
+                "email": {
+                  "required": true,
+                  "type": "string",
+                  "example": "fulano@dev.com"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "description": "Endpoint para pegar os dados de um usuário",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "number",
+            "description": "ID do usuário que será buscado"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    }
+  }
+}

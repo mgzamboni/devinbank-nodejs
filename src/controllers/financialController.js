@@ -5,12 +5,31 @@ const fileSystem = require('fs')
 
 module.exports = {
     async index(req, res){
+        // #swagger.tags = ['Financial']
+        // #swagger.description = 'Endpoint para obter a lista de relatórios financeiros'
         const financial = getData('financial.json')
         return res.status(200).json({financial: financial})
     },
 
     async addNewFinance(req, res) {
-        const { filename, size } = req.file
+        /*
+            #swagger.tags = ['Financial']
+            #swagger.description = 'Endpoint para ler dados de um arquivo xlsx e armazenar na base de dados'
+            #swagger.consumes = ['multipart/form-data']  
+            #swagger.parameters['userId'] = { 
+                description: 'ID do usuário.',
+                type: 'number',
+                required: 'true'
+            }
+            #swagger.parameters['file'] = {
+                in: 'formData',
+                type: 'file',
+                required: 'true',
+                description: 'Some description...',
+                accept: '/',
+            } 
+        */
+        const { filename } = req.file
         const { userId } = req.params
 
         // Check if userId is valid
@@ -63,6 +82,20 @@ module.exports = {
     },
 
     async deleteFinance(req, res) {
+        /*
+            #swagger.tags = ['Financial']
+            #swagger.description = 'Endpoint para remover uma transação de um usuário específico'
+            #swagger.parameters['userId'] = { 
+                description: 'ID do usuário.',
+                type: 'number',
+                required: 'true',
+            }
+            #swagger.parameters['financialId'] = {
+                description: 'ID de uma transação',
+                type: 'number',
+                required: 'true',
+            } 
+        */
         const {userId, financialId} = req.params
         if(isNaN(userId) || isNaN(financialId))
             return res.status(400).json({message: `The 'userId' and 'financialId' can only be numbers `})
@@ -81,9 +114,23 @@ module.exports = {
     },
 
     async getExpenses(req, res) {
+            /*
+            #swagger.tags = ['Financial']
+            #swagger.description = 'Endpoint que retorna a soma total dos valores de transações de um usuário ou a soma dos valores filtrados pela query 'typeOfExpenses''
+            #swagger.parameters['userId'] = { 
+                description: 'ID do usuário.',
+                type: 'number',
+                required: 'true',
+            }
+            #swagger.parameters['typeOfExpenses'] = {
+                in: 'query',
+                description: 'Filtro que identifica os tipos de transações que serão calculados',
+                type: 'array',
+                collectionFormat: 'multi',
+            } 
+        */
         const { userId } = req.params
         const query = req.query
-        console.log(query)
         if(isNaN(userId) )
             return res.status(400).json({message: `The 'userId' can only be numbers `})
 

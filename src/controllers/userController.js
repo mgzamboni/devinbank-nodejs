@@ -3,12 +3,43 @@ const userService = require('../services/user.service')
 
 module.exports = {
     async index(req, res){
+        // #swagger.tags = ['Users']
+        // #swagger.description = 'Endpoint para obter a lista de usuários'
         if (validateDB('users.json') === false) return res.status(500).json({message: 'users.json database not found'})
         const users = getData('users.json')
         return res.status(200).json({users: users})
     },
 
     async addNewUser(req, res) {
+        /*
+            #swagger.tags = ['Users']
+            #swagger.description = 'Endpoint para adicionar um novo usuário a lista de usuários'
+            #swagger.consumes = ['application/json']
+            #swagger.parameters['obj'] = { 
+                in: 'body', 
+                required: 'true',
+                '@schema': { 
+                    "required": ["id", "name", "email"], 
+                    "properties": { 
+                        "id": { 
+                            "required": true,
+                            "type": "number",
+                            "example": 5, 
+                        },
+                        "name": {
+                            "required": true,
+                            "type": "string",
+                            "example": "fulano",
+                        },
+                        "email": {
+                            "required": true,
+                            "type": "string",
+                            "example": "fulano@dev.com", 
+                        },
+                    } 
+                } 
+            } 
+        */
         if (validateDB('users.json') === false) return res.status(500).json({message: 'users.json database not found'})
 
         const checkInput = validateUserInput(req.body)
@@ -33,6 +64,35 @@ module.exports = {
     },
 
     async updateUser(req, res) {
+        /*
+            #swagger.tags = ['Users']
+            #swagger.description = 'Endpoint para atualizar um usuário'
+            #swagger.consumes = ['application/json']
+            #swagger.parameters['id'] = {
+                description: 'ID do usuário a ser atualizado',
+                type: 'number',
+                required: 'true',
+            } 
+            #swagger.parameters['obj'] = { 
+                in: 'body', 
+                required: 'true',
+                '@schema': { 
+                    "required": ["name", "email"], 
+                    "properties": { 
+                        "name": {
+                            "required": true,
+                            "type": "string",
+                            "example": "fulano",
+                        },
+                        "email": {
+                            "required": true,
+                            "type": "string",
+                            "example": "fulano@dev.com", 
+                        },
+                    } 
+                } 
+            } 
+        */
         const { id } = req.params
         if(isNaN(id))
             return res.status(400).json({message: 'Invalid id format'})
@@ -64,6 +124,16 @@ module.exports = {
     },
 
     async userInfo(req, res) {
+        /*
+            #swagger.tags = ['Users']
+            #swagger.description = 'Endpoint para pegar os dados de um usuário'
+            #swagger.consumes = ['application/json']
+            #swagger.parameters['id'] = {
+                description: 'ID do usuário que será buscado',
+                type: 'number',
+                required: 'true',
+            } 
+        */
         const { id } = req.params
         if(isNaN(id))
             return res.status(400).json({message: 'Invalid id format'})
